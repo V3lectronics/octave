@@ -3,9 +3,9 @@
 % pkg install "https://github.com/gnu-octave/pkg-control/releases/download/control-4.1.3/control-4.1.3.tar.gz"
 % pkg install "https://downloads.sourceforge.net/project/octave/Octave%20Forge%20Packages/Individual%20Package%20Releases/matgeom-1.2.4.tar.gz"
 
-pkg load statistics
-pkg load signal
-pkg load control
+% pkg load statistics
+% pkg load signal
+% pkg load control
 % pkg load matgeom
 
 % format short g
@@ -87,30 +87,9 @@ uI = (I*0.7*0.01 + I_range*0.03*0.01)/sqrt(3)
 
 uU = (U*0.7*0.01 + U_range*0.05*0.01)/sqrt(3)
 
-% format bank
 matrix = [U, U_range, I, I_range]
 
-% U_rms = rms(U)
-
-% fitlm(I,U)
-
 x=10;
-
-
-% L = lineFit(I, U)
-
-% ols(I, U)
-
-
-% a=[I,ones(size(I))]
-% b=U
-%
-% coefs=a\b
-% fit = coefs(1)*a+coefs(2)
-% plot(I,U,'ro',I,fit)
-
-% errorbar(X, Y, err)
-% figure (1);
 
 format short
 
