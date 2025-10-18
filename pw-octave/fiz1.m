@@ -1,4 +1,10 @@
-pkg install "https://github.com/gnu-octave/statistics/releases/download/release-1.7.5/statistics-1.7.5.tar.gz"
+% pkg install "https://github.com/gnu-octave/statistics/releases/download/release-1.7.5/statistics-1.7.5.tar.gz"
+% pkg install "https://downloads.sourceforge.net/project/octave/Octave%20Forge%20Packages/Individual%20Package%20Releases/signal-1.4.6.tar.gz"
+% pkg install "https://github.com/gnu-octave/pkg-control/releases/download/control-4.1.3/control-4.1.3.tar.gz"
+
+pkg load statistics
+pkg load signal
+pkg load control
 
 % format short g
 
@@ -85,20 +91,25 @@ matrix = [U, U_range, I, I_range]
 
 % U_rms = rms(U)
 
+% fitlm(I,U)
+
+x=10
 
 % errorbar(X, Y, err)
-figure (1);
-errorbar(I, U, uU)
+% figure (1);
+p1 = errorbar(I, U, uU)
+set(p1, "linestyle", "none");
+set(p1, "marker", "+");
 title ("U(I) characteristic");
 xlabel ("I(A)");
 ylabel ("U(V)");
-annotation('textbox',[0.5 0.8, 0, 0],'string', sprintf('this is x: %f', x));
+% annotation('textbox',[0.5 0.8, 0, 0],'string', sprintf('this is x: %f', x));
 
-figure (2);
-errorbar(U, I, uI)
-title ("I(U) characteristic");
-xlabel ("U(V)");
-ylabel ("I(A)");
+% figure (2);
+% errorbar(U, I, uI)
+% title ("I(U) characteristic");
+% xlabel ("U(V)");
+% ylabel ("I(A)");
 
 % figure (3);
 % x = -10:0.1:10;
