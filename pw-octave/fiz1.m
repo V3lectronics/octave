@@ -3,7 +3,7 @@
 % pkg install "https://github.com/gnu-octave/pkg-control/releases/download/control-4.1.3/control-4.1.3.tar.gz"
 % pkg install "https://downloads.sourceforge.net/project/octave/Octave%20Forge%20Packages/Individual%20Package%20Releases/matgeom-1.2.4.tar.gz"
 
-% pkg load statistics
+pkg load statistics
 % pkg load signal
 % pkg load control
 % pkg load matgeom
@@ -91,7 +91,7 @@ matrix = [U, U_range, I, I_range]
 
 x=10;
 
-format short
+format short g
 
 fit1 = polyfit(I,U,1);
 y_fit1=fit1(1)*I+fit1(2);
@@ -100,17 +100,17 @@ RSS1=sum(residuals1.^2);
 CHI1=sum((residuals1 ./ uU).^2);
 % X2 obliczono zgodnie z artykułem https://pl.wikipedia.org/wiki/Test_chi-kwadrat
 
-figure(1)
-p1 = errorbar(I, U, uU);
-set(p1, "linestyle", "none");
-set(p1, "marker", "+");
-xlabel ("I(A)");
-ylabel ("U(V)");
-hold on;
-plot(I, y_fit1, 'r-')
-hold off;
-legend("U(I)","fit")
-title ("U(I) characteristic");
+% figure(1)
+% p1 = errorbar(I, U, uU);
+% set(p1, "linestyle", "none");
+% set(p1, "marker", "+");
+% xlabel ("I(A)");
+% ylabel ("U(V)");
+% hold on;
+% plot(I, y_fit1, 'r-')
+% hold off;
+% legend("U(I)","fit")
+% title ("U(I) characteristic");
 
 %=======
 
@@ -120,25 +120,46 @@ residuals2 = I-y_fit2;
 RSS2=sum(residuals2.^2);
 CHI2=sum((residuals2 ./ uI).^2);
 
-figure(2)
-p2=errorbar(U, I, uI);
-set(p2, "linestyle", "none");
-set(p2, "marker", "+");
-xlabel ("U(V)");
-ylabel ("I(A)");
-hold on;
-plot(U, y_fit2, 'r-')
-hold off;
-legend("I(U)","fit")
-title ("I(U) characteristic");
+% figure(2)
+% p2=errorbar(U, I, uI);
+% set(p2, "linestyle", "none");
+% set(p2, "marker", "+");
+% xlabel ("U(V)");
+% ylabel ("I(A)");
+% hold on;
+% plot(U, y_fit2, 'r-')
+% hold off;
+% legend("I(U)","fit")
+% title ("I(U) characteristic");
 
 %========== SHOW RESULTS
 
-fit1
+format long g
+
+% U_mean = mean(U)
+% I_mean = mean(I)
+
+disp("============")
+
+slope1=fit1(1) % R = slope
+intercept1=fit1(2)
 RSS1
 CHI1
+X = [ones(length(I), 1), I];  % Design matrix with intercept
+[b, bint, r, rint, stats] = regress(U, X);
+slope_std_error1 = (rint(2,2) - rint(2,1)) / 3.92
+R1 = slope1
+uR1 = slope_std_error1
 
-fit2
+disp("============")
+
+slope2=fit2(1)
 RSS2
 CHI2
+X = [ones(length(U), 1), U];  % Design matrix with intercept
+[b, bint, r, rint, stats] = regress(I, X);
+slope_std_error2 = (rint(2,2) - rint(2,1)) / 3.92
+R2 = 1/fit2(1) % R = 1/slope
+uR2 = abs(  (1/(slope2)^2) * slope_std_error2  )
 
+disp("============")
