@@ -68,7 +68,7 @@ I_Bconst = [
 -0.025
 -0.03 ];
 
-format short
+format long
 
 % grubość płytki [m]
 d = 0.001
@@ -107,23 +107,90 @@ uB_x_I_Iconst = ( (Iconst .* uB_Iconst).^2 + (B_Iconst .* uI).^2 ).^(0.5)	% niep
 % pola magnetycznego i (b) przy stałej wartości natężenia prądu. Punkty pomiarowe muszą
 % posiadać odcinki niepewności.
 
+% 2. Obliczyć stałą Halla metodą najmniejszej sumy kwadratów przy użyciu programu Origin.
+% Sprawdzić wartość testu χ2 dla otrzymanych prostych. Wyznaczyć niepewność typu B
+% i niepewność złożoną stałej Halla.
+
+% [p, p_int, r, r_int, stats] = regress(a, F);
+%
+% intercept = p(1)
+% slope = p(2)
+% lower_bound_ci_intercept = p_int(1,1)
+% upper_bound_ci_intercept = p_int(1,2)
+% lower_bound_ci_slope = p_int(2,1)
+% upper_bound_ci_slope = p_int(2,2)
+%
+% intercept_stderr = (upper_bound_ci_intercept - intercept) / 1.96
+% slope_stderr = (upper_bound_ci_slope - slope) / 1.96
+%
+% R2 = stats(1)
+
+function retval = lin_regression(x, y)
+	disp("/////// LIN REG ////////")
+	F = [ones(size(x)), x];   % design matrix with intercept
+
+	[p, p_int, r, r_int, stats] = regress(y, F);
+
+	intercept = p(1)
+	slope = p(2)
+	lower_bound_ci_intercept = p_int(1,1)
+	upper_bound_ci_intercept = p_int(1,2)
+	lower_bound_ci_slope = p_int(2,1)
+	upper_bound_ci_slope = p_int(2,2)
+
+	% intercept_stderr = abs(lower_bound_ci_intercept-upper_bound_ci_intercept)/(2*1.96)
+	intercept_stderr = (upper_bound_ci_intercept - intercept) / 1.96
+	slope_stderr = (upper_bound_ci_slope - slope) / 1.96
+
+	R2 = stats(1)
+
+	retval = p;
+endfunction
+
+
+function lin_regression_chi2(p, x, y, y_err)
+% p is the output of linear regression
+	disp("/////// CHI2 ////////")
+	fity = p(2)*x + p(1);
+	CHI2 = chi2(y, fity, y_err)
+	degs_of_freedom = length(y)-2
+	CHI2_crit = chi2_crit(0.05, degs_of_freedom)
+
+	if (CHI2 < CHI2_crit)
+		disp("brak podstaw do odrzucenia hipotezy o liniowości")
+	else
+		disp("należy odrzucić hipotezę o liniowości")
+	endif
+endfunction
+
+
+
+disp("=======B CONST========")
+
+p_Bconst = lin_regression(B_x_I_Bconst, Uh_x_d_Bconst);
+lin_regression_chi2(p_Bconst, B_x_I_Bconst, Uh_x_d_Bconst, uUh_x_d_Bconst)
+fity_Bconst = p(2)*B_x_I_Bconst + p(1);
 
 figure(1)
 p1 = errorbar(B_x_I_Bconst, Uh_x_d_Bconst, uB_x_I_Bconst, uUh_x_d_Bconst, "~>");
+% p1 = plot(B_x_I_Bconst, Uh_x_d_Bconst);
 set(p1, "linestyle", "none");
 set(p1, "marker", "+");
 set(gca, "linewidth", 4, "fontsize", 18);
 xlabel ("B*I [TA]");
 ylabel ("U*d [V]");
 title ("f(x) = Uh*d(B*I) dla B=const");
-% hold on;
-% plot(ch, fity, 'r-');
+
+hold on;
+plot(B_x_I_Bconst, fity_Bconst, 'r-');
 % legend("a(ch)","fit");
-% hold off;
-% plot(BconstI, Uh_Bconst)
-% hold on;
-% % plot(B)
-% hold off;
+hold off;
+
+disp("=======I CONST========")
+
+p_Iconst = lin_regression(B_x_I_Iconst, Uh_x_d_Iconst);
+lin_regression_chi2(p_Iconst, B_x_I_Iconst, Uh_x_d_Iconst, uUh_x_d_Iconst)
+fity_Iconst = p(2)*B_x_I_Iconst + p(1);
 
 figure(2)
 p1 = errorbar(B_x_I_Iconst, Uh_x_d_Iconst, uB_x_I_Iconst, uUh_x_d_Iconst, "~>");
@@ -133,3 +200,9 @@ set(gca, "linewidth", 4, "fontsize", 18);
 xlabel ("B*I [TA]");
 ylabel ("U*d [V]");
 title ("f(x) = Uh*d(B*I) dla I=const");
+
+hold on;
+plot(B_x_I_Iconst, fity_Iconst, 'r-');
+% legend("a(ch)","fit");
+hold off;
+
