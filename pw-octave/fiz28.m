@@ -21,7 +21,7 @@ a = a .* (pi/180);
 a = a'
 ch = ch'
 
-F = [ones(size(ch)), ch];   % design matrix with intercept
+% F = [ones(size(ch)), ch];   % design matrix with intercept
 
 % =========================================
 % ======== STATISTICS =====================
@@ -63,20 +63,26 @@ endfunction
 % a_type_A_stderr = std_dev(a)
 % ch_type_A_stderr = std_dev(ch)
 
-[p, p_int, r, r_int, stats] = regress(a, F);
+function retval = lin_regression(v)
+	F = [ones(size(v)), v];   % design matrix with intercept
 
-intercept = p(1)
-slope = p(2)
-lower_bound_ci_intercept = p_int(1,1)
-upper_bound_ci_intercept = p_int(1,2)
-lower_bound_ci_slope = p_int(2,1)
-upper_bound_ci_slope = p_int(2,2)
+	[p, p_int, r, r_int, stats] = regress(v, F);
 
-% intercept_stderr = abs(lower_bound_ci_intercept-upper_bound_ci_intercept)/(2*1.96)
-intercept_stderr = (upper_bound_ci_intercept - intercept) / 1.96
-slope_stderr = (upper_bound_ci_slope - slope) / 1.96
+	intercept = p(1)
+	slope = p(2)
+	lower_bound_ci_intercept = p_int(1,1)
+	upper_bound_ci_intercept = p_int(1,2)
+	lower_bound_ci_slope = p_int(2,1)
+	upper_bound_ci_slope = p_int(2,2)
 
-R2 = stats(1)
+	% intercept_stderr = abs(lower_bound_ci_intercept-upper_bound_ci_intercept)/(2*1.96)
+	intercept_stderr = (upper_bound_ci_intercept - intercept) / 1.96
+	slope_stderr = (upper_bound_ci_slope - slope) / 1.96
+
+	R2 = stats(1)
+endfunction
+
+lin_regression(ch)
 
 
 disp("/////// std errors ////////")
