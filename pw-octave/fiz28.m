@@ -63,10 +63,11 @@ endfunction
 % a_type_A_stderr = std_dev(a)
 % ch_type_A_stderr = std_dev(ch)
 
-function retval = lin_regression(v)
-	F = [ones(size(v)), v];   % design matrix with intercept
+function retval = lin_regression(x, y)
+	disp("/////// LIN REG ////////")
+	F = [ones(size(x)), x];   % design matrix with intercept
 
-	[p, p_int, r, r_int, stats] = regress(v, F);
+	[p, p_int, r, r_int, stats] = regress(y, F);
 
 	intercept = p(1)
 	slope = p(2)
@@ -100,15 +101,22 @@ gamma_type_A_stderr = slope_stderr
 % całkowita
 gamma_total_stderr = mat2str( (gamma_type_B_stderr^2 + gamma_type_A_stderr^2)^(0.5), 2)
 
-disp("/////// CHI2 ////////")
-fity = p(2)*ch + p(1);
-CHI2 = chi2(a, fity, a_type_B_stderr)
-degs_of_freedom = length(a)-2
-CHI2_crit = chi2_crit(0.05, degs_of_freedom)
+function = lin_regression_chi2(p) % p is the output of linear regression
+	disp("/////// CHI2 ////////")
+	fity = p(2)*ch + p(1);
+	CHI2 = chi2(a, fity, a_type_B_stderr)
+	degs_of_freedom = length(a)-2
+	CHI2_crit = chi2_crit(0.05, degs_of_freedom)
 
-if (CHI2 < CHI2_crit)
-    disp("brak podstaw do odrzucenia hipotezy o liniowości")
-endif
+	if (CHI2 < CHI2_crit)
+		disp("brak podstaw do odrzucenia hipotezy o liniowości")
+	else
+		disp("należy odrzucić hipotezę o liniowości"
+	endif
+endfunction
+
+lin_regression_chi2(p)
+
 
 % =========================================
 % ============== PLOT =====================

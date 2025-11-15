@@ -68,18 +68,23 @@ I_Bconst = [
 -0.025
 -0.03 ];
 
-format long
+format short
+pkg load statistics
 
 % grubość płytki [m]
 d = 0.001
 ud = 0.0001/2 % z tabliczki (podzielić przez 2 bo to jest rozszerzona)
 uI = 0.0005 % z tabliczki
 
-% d = 1
-% ud = 0.1
 
 Bconst = 0.250
 Iconst = 0.030
+
+% fake dane
+% d = 1
+% ud = 0.1
+% Bconst = 250
+% Iconst = 030
 
 uB_Iconst = B_Iconst .* 0.02 % z tabliczki
 uB_Bconst = Bconst .* 0.02 % z tabliczki
@@ -125,6 +130,19 @@ uB_x_I_Iconst = ( (Iconst .* uB_Iconst).^2 + (B_Iconst .* uI).^2 ).^(0.5)	% niep
 %
 % R2 = stats(1)
 
+
+% PW style chi2 statistic for testing linear goodness of fit
+function retval = chi2(y_observed, y_fitted, y_uncertainty)
+	% chi2 = sum(((y - y_fit).^2) ./ (u_y.^2));
+	retval = sum( y_uncertainty.^(-2) .* (y_observed - y_fitted).^2 );
+endfunction
+
+% get critial chi2 value
+function retval = chi2_crit(alpha, dof)
+	retval = chi2inv(1 - alpha, dof);
+endfunction
+
+
 function retval = lin_regression(x, y)
 	disp("/////// LIN REG ////////")
 	F = [ones(size(x)), x];   % design matrix with intercept
@@ -165,11 +183,12 @@ endfunction
 
 
 
+disp("")
 disp("=======B CONST========")
 
 p_Bconst = lin_regression(B_x_I_Bconst, Uh_x_d_Bconst);
 lin_regression_chi2(p_Bconst, B_x_I_Bconst, Uh_x_d_Bconst, uUh_x_d_Bconst)
-fity_Bconst = p(2)*B_x_I_Bconst + p(1);
+fity_Bconst = p_Bconst(2)*B_x_I_Bconst + p_Bconst(1);
 
 figure(1)
 p1 = errorbar(B_x_I_Bconst, Uh_x_d_Bconst, uB_x_I_Bconst, uUh_x_d_Bconst, "~>");
@@ -183,14 +202,17 @@ title ("f(x) = Uh*d(B*I) dla B=const");
 
 hold on;
 plot(B_x_I_Bconst, fity_Bconst, 'r-');
+% plot(0, p_Bconst(1), 'ro', 'MarkerSize', 10); % intercept point in red circle
+
 % legend("a(ch)","fit");
 hold off;
 
+disp("")
 disp("=======I CONST========")
 
 p_Iconst = lin_regression(B_x_I_Iconst, Uh_x_d_Iconst);
 lin_regression_chi2(p_Iconst, B_x_I_Iconst, Uh_x_d_Iconst, uUh_x_d_Iconst)
-fity_Iconst = p(2)*B_x_I_Iconst + p(1);
+fity_Iconst = p_Iconst(2)*B_x_I_Iconst + p_Iconst(1);
 
 figure(2)
 p1 = errorbar(B_x_I_Iconst, Uh_x_d_Iconst, uB_x_I_Iconst, uUh_x_d_Iconst, "~>");
