@@ -167,7 +167,7 @@ endfunction
 
 
 function lin_regression_chi2(p, x, y, y_err)
-% p is the output of linear regression
+% p is the output of regress()
 	disp("/////// CHI2 ////////")
 	fity = p(2)*x + p(1);
 	CHI2 = chi2(y, fity, y_err)
