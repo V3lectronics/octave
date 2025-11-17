@@ -90,15 +90,15 @@ uB_Iconst = B_Iconst .* 0.02 % z tabliczki
 uB_Bconst = Bconst .* 0.02 % z tabliczki
 
 % B = CONST
-Uh_x_d_Bconst = Uh_Bconst .* d							% y = Uh*d
-B_x_I_Bconst = I_Bconst .* Bconst                                       	% x = B*I
-uUh_Bconst = (Uh_Bconst.*0.005+0.4*0.001)/(sqrt(3))				% niepewność Uh
-uUh_x_d_Bconst = ( (Uh_Bconst .* ud).^2 + (d * uUh_Bconst) ).^(0.5)		% niepewność y
-uB_x_I_Bconst = ( (I_Bconst .* uB_Bconst).^2 + (Bconst .* uI).^2 ).^(0.5)       % niepewność x
+Uh_x_d_Bconst = Uh_Bconst .* d;							% y = Uh*d
+B_x_I_Bconst = I_Bconst .* Bconst;                                       	% x = B*I
+uUh_Bconst = ( abs(Uh_Bconst).*0.005+0.4*0.001)/(sqrt(3))				% niepewność Uh
+uUh_x_d_Bconst = ( (abs(Uh_Bconst) .* ud).^2 + (d * uUh_Bconst) ).^(0.5)		% niepewność y
+uB_x_I_Bconst = ( (abs(I_Bconst) .* uB_Bconst).^2 + (Bconst .* uI).^2 ).^(0.5)       % niepewność x
 
 % I = CONST
-Uh_x_d_Iconst = Uh_Iconst .* d							% y = Uh*d
-B_x_I_Iconst = B_Iconst .* Iconst						% x = B*I
+Uh_x_d_Iconst = Uh_Iconst .* d;							% y = Uh*d
+B_x_I_Iconst = B_Iconst .* Iconst;						% x = B*I
 uUh_Iconst = (Uh_Iconst.*0.005+0.4*0.001)/(sqrt(3))				% niepewność Uh
 uUh_x_d_Iconst = ( (Uh_Iconst .* ud).^2 + (d * uUh_Iconst) ).^(0.5)		% niepewność y
 uB_x_I_Iconst = ( (Iconst .* uB_Iconst).^2 + (B_Iconst .* uI).^2 ).^(0.5)	% niepewność x
@@ -227,4 +227,33 @@ hold on;
 plot(B_x_I_Iconst, fity_Iconst, 'r-');
 % legend("a(ch)","fit");
 hold off;
+
+disp("")
+disp("======== niepewność złożona =======")
+
+% PW fiz lab style std dev
+function retval = std_dev(v)
+	n = length(v);
+	expected = mean(v);
+	sum_sq_res = sum((v-expected).^2);
+	retval = ( ( 1/( n*(n-1) ) ) * sum_sq_res )^(0.5);
+endfunction
+
+
+disp("typ A")
+std_dev(I_Bconst)
+
+% typ B
+d = 0.1 * 10^(-3)
+ud = 0.1/2 * 10^(-3)
+
+I = -0.03
+uI = 5*10^(-3)
+
+B = 0.250
+uB = 5*10^(-3)
+
+Uh = 0.0401
+
+ucRh = sqrt( ( Uh/(I*B) * ud )^2 + ( (-Uh*d)/(B*I^2) * uI )^2 + ( (-Uh*d)/(B^2*I) * uB)^2 )
 
