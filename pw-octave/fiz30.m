@@ -76,15 +76,8 @@ d = 0.001
 ud = 0.0001/2 % z tabliczki (podzielić przez 2 bo to jest rozszerzona)
 uI = 0.0005 % z tabliczki
 
-
 Bconst = 0.250
 Iconst = 0.030
-
-% fake dane
-% d = 1
-% ud = 0.1
-% Bconst = 250
-% Iconst = 030
 
 uB_Iconst = B_Iconst .* 0.02 % z tabliczki
 uB_Bconst = Bconst .* 0.02 % z tabliczki
@@ -92,20 +85,23 @@ uB_Bconst = Bconst .* 0.02 % z tabliczki
 % B = CONST
 Uh_x_d_Bconst = Uh_Bconst .* d;							% y = Uh*d
 B_x_I_Bconst = I_Bconst .* Bconst;                                       	% x = B*I
-uUh_Bconst = ( abs(Uh_Bconst).*0.005+0.4*0.001)/(sqrt(3))				% niepewność Uh
-uUh_x_d_Bconst = ( (abs(Uh_Bconst) .* ud).^2 + (d * uUh_Bconst) ).^(0.5)		% niepewność y
-uB_x_I_Bconst = ( (abs(I_Bconst) .* uB_Bconst).^2 + (Bconst .* uI).^2 ).^(0.5)       % niepewność x
+uUh_Bconst = ( abs(Uh_Bconst).*0.005+0.4*0.001 ) ./(sqrt(3))			% niepewność Uh
+% uUh_Bconst = abs(Uh_Bconst).*0.003			% niepewność Uh
+uUh_x_d_Bconst = ( (Uh_Bconst .* ud).^2 + (d * uUh_Bconst).^2 ).^(0.5)	% niepewność y
+uB_x_I_Bconst = ( (I_Bconst .* uB_Bconst).^2 + (Bconst .* uI).^2 ).^(0.5)  % niepewność x
+
+% uUh_x_d_Bconst = uUh_x_d_Bconst .* 0.01
+% uB_x_I_Bconst =  uB_x_I_Bconst .* 0.01
+
+% uUh_x_d_Bconst = 0
+% uB_x_I_Bconst = 0
 
 % I = CONST
 Uh_x_d_Iconst = Uh_Iconst .* d;							% y = Uh*d
 B_x_I_Iconst = B_Iconst .* Iconst;						% x = B*I
-uUh_Iconst = (Uh_Iconst.*0.005+0.4*0.001)/(sqrt(3))				% niepewność Uh
-uUh_x_d_Iconst = ( (Uh_Iconst .* ud).^2 + (d * uUh_Iconst) ).^(0.5)		% niepewność y
+uUh_Iconst = (abs(Uh_Iconst).*0.005+0.4*0.001) ./(sqrt(3))			% niepewność Uh
+uUh_x_d_Iconst = ( (Uh_Iconst .* ud).^2 + (d * uUh_Iconst).^2 ).^(0.5)		% niepewność y
 uB_x_I_Iconst = ( (Iconst .* uB_Iconst).^2 + (B_Iconst .* uI).^2 ).^(0.5)	% niepewność x
-
-% niepewność U*d JEST POMIJALNIE MAŁA w stosunku do B*I
-
-%TODO złożyć z niepewnością d
 
 % 1. Sporządzić wykresy zależności iloczynu napięcia Halla i grubości płytki od wartości iloczynu
 % indukcji pola magnetycznego i natężenia prądu sterującego: (a) przy stałej wartości indukcji
@@ -192,6 +188,8 @@ fity_Bconst = p_Bconst(2)*B_x_I_Bconst + p_Bconst(1);
 
 figure(1)
 p1 = errorbar(B_x_I_Bconst, Uh_x_d_Bconst, uB_x_I_Bconst, uUh_x_d_Bconst, "~>");
+% axis ([x_lo x_hi y_lo y_hi])
+
 % p1 = plot(B_x_I_Bconst, Uh_x_d_Bconst);
 set(p1, "linestyle", "none");
 set(p1, "marker", "+");
@@ -204,7 +202,7 @@ hold on;
 plot(B_x_I_Bconst, fity_Bconst, 'r-');
 % plot(0, p_Bconst(1), 'ro', 'MarkerSize', 10); % intercept point in red circle
 
-% legend("a(ch)","fit");
+legend("f(x)","fit");
 hold off;
 
 disp("")
@@ -225,7 +223,7 @@ title ("f(x) = Uh*d(B*I) dla I=const");
 
 hold on;
 plot(B_x_I_Iconst, fity_Iconst, 'r-');
-% legend("a(ch)","fit");
+legend("f(x)","fit");
 hold off;
 
 disp("")
