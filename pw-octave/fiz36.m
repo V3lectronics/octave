@@ -112,7 +112,7 @@ u1_d618 = [
 93.05
 94.33
 ]
-% u1_d618 = u1_d618 ./ 1000
+u1_d618 = u1_d618 ./ 1000
 
 i_d618 = u1_d618 ./ 100000
 
@@ -170,7 +170,7 @@ u1_d598 = [
 0.1020
 ]
 
-u1_d598 = u1_d598 ./ 1000
+% u1_d598 = u1_d598 ./ 1000
 
 i_d598 = u1_d598 ./ 100000
 
@@ -211,15 +211,25 @@ niep_u2_d598 = 0.0005 .* u2_d598 + 0.001 * 2; % 2 or 20
 niep_id598 = sqrt( (1/R .* niep_u1_d598).^2 + (u1_d598 .* R^(-2) ).^2 ) 
 
 figure(1)
-p1 = errorbar(u2_d618, i_d618, niep_u2_d618, niep_id618, "~>");
-% axis ([x_lo x_hi y_lo y_hi])
 
-% p1 = plot(B_x_I_Bconst, Uh_x_d_Bconst);
+hold on;
+
+p1 = errorbar(u2_d618, i_d618, niep_u2_d618, niep_id618, "~>");
+p2 = errorbar(u2_d598, i_d598, niep_u2_d598, niep_id598, "~>");
+
 set(p1, "linestyle", "none");
 set(p1, "marker", "+");
-set(gca, "linewidth", 4, "fontsize", 18);
+set(p2, "linestyle", "none");
+set(p2, "marker", "+");
+set(gca, "linewidth", 4, "fontsize", 8);
 xlabel ("U2 [V]");
 ylabel ("I [A]");
-title ("Charakterystyki I(U) fotokomorki");
+title ("Charakterystyki I(U)");
+legend("dioda 618 nm","dioda 598 nm");
+
+hold off;
+
+saveas(gcf, 'diody-fiz36.png');
+
 
 
