@@ -24,23 +24,72 @@ RxRv = Rx./Rv
 
 disp("////// 3 //////")
 
-I1 = [0.1, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 9.5]
-U1 = [0.0637, 0.3245, 0.2955, 0.4602, 0.9333, 0.6644, 0.8425, 1.1066, 1.5532, 2.0155]
-U2 = [0.0131, 0.0554, 0.1123, 0.2000, 0.3009, 0.4007, 0.5020, 0.5970, 0.7027, 0.8052]
+% I1 = [0.1, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 9.5];
+I1 = [0.1, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+U1 = [0.0637, 0.3245, 0.2955, 0.4602, 0.9333, 0.6644, 0.8425, 1.1066, 1.5532, 2.0155];
+U2 = [0.0131, 0.0554, 0.1123, 0.2000, 0.3009, 0.4007, 0.5020, 0.5970, 0.7027, 0.8052];
 %U3 jest w mV
-U3 = [1.012, 4.359, 8.700, 15.310, 22,997, 30.609, 38.341, 45.60, 53.67, 61.51]
-Ic = [0.2, 0.6, 1.1, 2.1, 2.9, 4.0, 5.2, 6.1, 7.0, 8.0]
+U3 = [1.012, 4.359, 8.700, 15.310, 22.997, 30.609, 38.341, 45.60, 53.67, 61.51];
+U3 = U3./1000;
+Ic = [0.2, 0.6, 1.1, 2.1, 2.9, 4.0, 5.2, 6.1, 7.0, 8.0];
 
-length(I1)
-length(U2)
 
-I2 = []
-I3 = []
+I1
 
-Pz = []
-Rz = []
-Pr = []
-deltaI = []
+Rw = 0.1; %rezystor wzorcowy
+I2 = U2./Rw
+
+Rb = 0.075/10; %bocznik
+I3 = [U3./Rb]
+
+Ic %cęgowy
+
+% hold on;
+% p1 = plot(I1)
+% title ("Pomiary pradu roznymi metodami");
+% set(p1, "linestyle", "none");
+% set(p1, "marker", "+");
+% set(gca, "linewidth", 4, "fontsize", 18);
+% plot(I2)
+% plot(I3)
+% plot(Ic)
+% legend("I1", "I2", "I3", "Ic")
+%
+% hold off;
+
+Pz = U1.*I1
+Rz = U1./I1
+Pr = (U2.^2) ./ Rw
+deltaI = ( (I2-I1)./I1 ) *100
+
+
+figure(1)
+set(gca, "linewidth", 6, "fontsize", 18);
+p1 = plot(U1, I1)
+legend("I1(U1)")
+title("I1(U1)")
+saveas(p1, 'I1(U1).png'); 
+
+figure(2)
+set(gca, "linewidth", 6, "fontsize", 18);
+p2 = plot(I1, Rz)
+legend("Rz(I1)")
+title("Rz(I1)")
+saveas(p2, 'Rz(I1).png'); 
+
+figure(3)
+set(gca, "linewidth", 6, "fontsize", 18);
+p3 = plot(Pz, U1)
+legend("U1(Pz)")
+title("U1(Pz)")
+saveas(p3, 'U1(Pz).png'); 
+
+figure(4)
+set(gca, "linewidth", 6, "fontsize", 18);
+p4 = plot(U2, Pr)
+legend("Pr(U2)")
+title("Pr(U2)")
+saveas(p4, 'Pr(U2).png');
 
 
 
