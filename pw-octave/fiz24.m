@@ -49,20 +49,55 @@ function lin_regression_chi2(p, x, y, y_err)
 	endif
 endfunction
 
-lambda = 589.3 * 10^(-9);
-ang = [0.2376562, 0.1178097, 0, 0.1178097, 0.2385289];
-m = [2, 1, 0 , 1, 2];
+lambda = 589.3; %nm
+% lambda = 589.3 * 10^(-9);
+
+ang = [
+0.2376562
+0.1178097
+0
+0.1178097
+0.2385289
+];
+
+m = [
+2
+1
+0
+1
+2
+];
 
 x_mlambda = lambda .* m
 y_sinang = sin(ang)
 
+% niep_ang = dokładność odczytu delta phi / sqrt 3 [rad]
+niep_ang = 0.00029147 / sqrt(3);
+niep_sin_ang = cos(ang) .* niep_ang
+
+p = lin_regression(x_mlambda, y_sinang);
+lin_regression_chi2(p, x_mlambda, y_sinang, niep_sin_ang)
+
+d = 1/p(2)
+% dnanometry = 1/p(2)
+
+fit = p(2)*x_mlambda + p(1);
+
 figure(1)
-p1 = errorbar(B_x_I_Iconst, Uh_x_d_Iconst, uB_x_I_Iconst, uUh_x_d_Iconst, "~>");
+p1 = errorbar(x_mlambda, y_sinang, 0, niep_sin_ang, "~>");
 set(p1, "linestyle", "none");
 set(p1, "marker", "+");
-set(gca, "linewidth", 4, "fontsize", 18);
-xlabel ("lambda * m");
-ylabel ("sin");
+set(gca, "linewidth", 4, "fontsize", 12);
+xlabel ("lambda * m [nm]");
+ylabel ("sin a [rad]");
 title ("Na");
+
+hold on;
+plot(x_mlambda, fit, 'r-');
+% legend("f(x)","fit");
+hold off;
+
+saveas(gcf, 'fiz24.png');
+
 
 
