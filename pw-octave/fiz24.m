@@ -78,26 +78,62 @@ niep_sin_ang = cos(ang) .* niep_ang
 p = lin_regression(x_mlambda, y_sinang);
 lin_regression_chi2(p, x_mlambda, y_sinang, niep_sin_ang)
 
+format long
+disp("stała siatki:")
 d = 1/p(2)
 % dnanometry = 1/p(2)
 
 fit = p(2)*x_mlambda + p(1);
 
-figure(1)
-p1 = errorbar(x_mlambda, y_sinang, 0, niep_sin_ang, "~>");
-set(p1, "linestyle", "none");
-set(p1, "marker", "+");
+% figure(1)
+% p1 = errorbar(x_mlambda, y_sinang, 0, niep_sin_ang, "~>");
+% set(p1, "linestyle", "none");
+% set(p1, "marker", "+");
+% set(gca, "linewidth", 4, "fontsize", 12);
+% xlabel ("lambda * m [nm]");
+% ylabel ("sin a [rad]");
+% title ("Na");
+%
+% hold on;
+% plot(x_mlambda, fit, 'r-');
+% % legend("f(x)","fit");
+% hold off;
+%
+% saveas(gcf, 'fiz24.png');
+
+
+disp("==================== NEON")
+
+ang = [ %rad
+0.1294458
+0.1265364
+0.1207192
+0.122173
+0.1183909
+];
+
+lambdatab = [
+640.2
+614.3
+594.5
+585.2
+576.0
+]
+
+format short
+m = 1
+lambda = ( sin(ang) .* d ) ./ m
+
+err = abs(lambdatab - lambda)
+
+% plot(lambdatab)
+% plot(lambda)
+bar(err)
+xlabel ("numer pomiaru");
+ylabel ("odchylenie [nm]");
+title ("| lambda tablicowe - lambda wlasne |");
 set(gca, "linewidth", 4, "fontsize", 12);
-xlabel ("lambda * m [nm]");
-ylabel ("sin a [rad]");
-title ("Na");
+saveas(gcf, 'fiz24-2.png');
 
-hold on;
-plot(x_mlambda, fit, 'r-');
-% legend("f(x)","fit");
-hold off;
-
-saveas(gcf, 'fiz24.png');
-
-
+avg = mean(err)
 
